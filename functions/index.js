@@ -6,6 +6,19 @@ var nodemailer = require('nodemailer');
 var firebase = require('firebase-admin');
 firebase.initializeApp(functions.config().firebase);
 var firestore= firebase.firestore();
+const gmailEmail = functions.config().gmail.email;
+const gmailPassword = functions.config().gmail.password;
+const mailTransport = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: gmailEmail,
+    pass: gmailPassword,
+  },
+});
+const mailOptions = {
+    from: '"Spammy Corp." <noreply@firebase.com>',
+    to: val.email,
+  };
 exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, response) => {
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
@@ -65,6 +78,7 @@ function processV2Request (request, response) {
       .then(snapshot => {
           console.log('Database hitted');
         if(snapshot.size===1){
+			
             return sendResponse('Your SSN is verified , provid your new email Id ');
         }else{
            return  sendResponse('Your SSN is not found ');
@@ -109,4 +123,16 @@ function sendResponse (responseToUser) {
         response.json(responseJson); // Send response to Dialogflow
     }
 }
+function sendEmailToParticipant(){
+	const mailOptions = {
+    from: '"Spammy Corp." <noreply@firebase.com>',
+    to: val.email,
+	
+	mailOptions.subject = subscribed ? 'Thanks and Welcome!' : 'Sad to see you go :`(';
+    mailOptions.text = subscribed ? 'Thanks you for subscribing to our newsletter. You will receive our next weekly newsletter.' : 'I hereby confirm that I will stop sending you the newsletter.';
 
+   return mailTransport.sendMail(mailOptions)
+    .then(() => console.log(`New ${subscribed ? '' : 'un'}subscription confirmation email sent to:`, val.email))
+    .catch((error) => console.error('There was an error while sending the email:', error));
+  };
+}
