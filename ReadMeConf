@@ -1,4 +1,4 @@
-firebase functions:config:set gmail.email="email@gmail.com" gmail.password="gmailPassword"
+
  function getParticipant(){
  var participantSSN = ''
  var participantStoreRef = firestore.collection('fidelity_participant');
@@ -16,5 +16,26 @@ firebase functions:config:set gmail.email="email@gmail.com" gmail.password="gmai
         });
 		}
 		return partDocument;
+		
+}
+
+// Update Participant
+
+
+function updateParticipantData( data){	
+const participantStoreRef =firestore.collection('fidelity_participant').doc(fidelity_participant.uid);
+
+return participantStoreRef
+	.get()
+	.then(doc => {
+		if (!doc.exists) {
+			participantStoreRef.set(data);
+		} else {
+			participantStoreRef.update(data);
 		}
+	})
+	.catch(err => {
+		console.log(`[LOGIN] ${err}`);
+	});
+}
 		
