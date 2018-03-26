@@ -48,12 +48,18 @@ function processV2Request (request, response) {
       console.log(' validateSSN Action performed');
       console.log('Parameters Recieved',parameters); 
       var participantSSN; 
+	  var participantEmail;
       for(var key in parameters) {
           if(key==='ssnNumber'){
             participantSSN =parameters[key];
-          }
+          }else if(key==='email'){
+			 participantEmail= parameters[key];
+		  }		  
       }
       console.log('SSN Got ',participantSSN);
+	   console.log('Eamil  Got ',participantEmail);
+	   if(participantSSN){
+		   // If we only have SSN
       var participantStoreRef = firestore.collection('fidelity_participant');
        var qyeryRef=participantStoreRef.where('ssn','==',participantSSN).get()
       .then(snapshot => {
@@ -63,13 +69,17 @@ function processV2Request (request, response) {
         }else{
            return  sendResponse('Your SSN is not found ');
         }
-       
+ return ;        
       })
       .catch(err => {
           console.log('Error getting documents', err);
           return sendResponse('System is currently facing difficulty to serve you , please try again after sometime');
       });
-     
+	   }
+	   else if(!participantSSN ==='undefined' &&  !participantEmail=== 'undefined' ){
+		   //Verify SSN and update the email id 
+	   }
+		   
  //   console.log(ssn);
   }
 
