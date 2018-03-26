@@ -1,1 +1,20 @@
 firebase functions:config:set gmail.email="email@gmail.com" gmail.password="gmailPassword"
+ function getParticipant(){
+ var participantSSN = ''
+ var participantStoreRef = firestore.collection('fidelity_participant');
+       var qyeryRef=participantStoreRef.where('ssn','==',participantSSN).get()
+      .then(snapshot => {
+          console.log('Database hitted');
+        if(snapshot.size===1){
+			 snapshot.forEach(doc => {
+			  var partDocument= doc.data();
+			  console.log(partDocument) ;
+			   
+      }
+            console.log(doc.id, '=>', doc.data());
+			
+        });
+		}
+		return partDocument;
+		}
+		
